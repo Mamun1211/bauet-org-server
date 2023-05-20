@@ -1,5 +1,3 @@
-## Visit Our Website - [Tech Specter](https://agency-97aa4.web.app/).
-#### Client Side Code - [Client-Side](https://github.com/shahidmonowarr/tech-specter-client).
 
 ```
 ## Available Service Specification
