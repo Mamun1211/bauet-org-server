@@ -13,8 +13,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// mongodb+srv://mamunabdullahal543:<password>@cluster0.h74upxd.mongodb.net/?retryWrites=true&w=majority
 //database connection
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.3bc4k.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.h74upxd.mongodb.net/?retryWrites=true&w=majority`;
 // console.log(uri);
 
 const client = new MongoClient(uri, {
@@ -42,7 +43,7 @@ async function verifyJWT(req, res, next) {
 async function run() {
   try {
     await client.connect();
-    const database = client.db("agency");
+    const database = client.db("bauet");
     const courseCollection = database.collection("course");
     const travelCollection = database.collection("travel");
     const reviewsCollection = database.collection("reviews");
@@ -110,32 +111,68 @@ async function run() {
 
 
     //user profile api
-    app.post("/userProfile", async (req, res) => {
-      const userProfile = req.body;
-      const result = await userProfileCollection.insertOne(userProfile);
-      res.send(result);
-    });
+
+    // app.put('/userProfile/:email', (req, res) => {
+    //   const email = req.params.email;
+    //   const { name, image, bloodGroup, status, phone, address, about } = req.body;
+    
+    //   // check if user with this email exists
+    //   User.findOne({ email }, (err, user) => {
+    //     if (err) {
+    //       console.log(err);
+    //       return res.status(500).json({ message: 'Server error' });
+    //     }
+    //     if (!user) {
+    //       return res.status(404).json({ message: 'User not found' });
+    //     }
+    
+    //     // update user profile with new data
+    //     user.name = name || user.name;
+    //     user.image = image || user.image;
+    //     user.bloodGroup = bloodGroup || user.bloodGroup;
+    //     user.status = status || user.status;
+    //     user.phone = phone || user.phone;
+    //     user.address = address || user.address;
+    //     user.about = about || user.about;
+    
+    //     // save updated user data
+    //     user.save((err) => {
+    //       if (err) {
+    //         console.log(err);
+    //         return res.status(500).json({ message: 'Server error' });
+    //       }
+    //       return res.status(200).json({ message: 'User profile updated successfully' });
+    //     });
+    //   });
+    // });
+    
+
+    // app.post("/userProfile", async (req, res) => {
+    //   const userProfile = req.body;
+    //   const result = await userProfileCollection.insertOne(userProfile);
+    //   res.send(result);
+    // });
 
     //get user profile api
-    app.get("/userProfile", async (req, res) => {
-      const cursor = userProfileCollection.find({});
-      const userProfile = await cursor.toArray();
-      res.send(userProfile);
-    });
+    // app.get("/userProfile", async (req, res) => {
+    //   const cursor = userProfileCollection.find({});
+    //   const userProfile = await cursor.toArray();
+    //   res.send(userProfile);
+    // });
 
-    app.get("/userProfile", async (req, res) => {
-      const email = req.query.email;
-      const decodedEmail = req.decoded.email;
-      if (email === decodedEmail) {
-        const query = { email: email };
-        const cursor = userProfileCollection.find(query);
-        const userProfile = await cursor.toArray();
-        return res.send(userProfile);
-      }
-      else{
-        return res.status(403).send({message: 'Forbidden access'});
-      }
-    });
+    // app.get("/userProfile", async (req, res) => {
+    //   const email = req.query.email;
+    //   const decodedEmail = req.decoded.email;
+    //   if (email === decodedEmail) {
+    //     const query = { email: email };
+    //     const cursor = userProfileCollection.find(query);
+    //     const userProfile = await cursor.toArray();
+    //     return res.send(userProfile);
+    //   }
+    //   else{
+    //     return res.status(403).send({message: 'Forbidden access'});
+    //   }
+    // });
 
 
     //All Service api
@@ -174,6 +211,27 @@ async function run() {
       console.log(result);
       res.send(result);
     });
+
+    // update api
+    app.put("/course/:id", async (req, res) => {
+      const courseId = req.params.id;
+      const courseUpdates = req.body;
+    
+      try {
+        const result = await courseCollection.updateOne(
+          { _id: ObjectId(courseId) },
+          { $set: courseUpdates }
+        );
+    
+        console.log(result);
+    
+        res.send(result);
+      } catch (err) {
+        console.error(err);
+        res.status(500).send("Error updating course.");
+      }
+    });
+    
 
     //travel api
     //get api
